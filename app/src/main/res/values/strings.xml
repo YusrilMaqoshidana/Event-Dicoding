@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">EventDicoding</string>
+    <string name="title_upcoming">Up Coming</string>
+    <string name="title_finished">Finished</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="no_event">Tidak Ada Event</string>
+    <string name="event_image">event image</string>
+</resources>
