@@ -8,13 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import id.usereal.eventdicoding.data.Event
 import id.usereal.eventdicoding.databinding.FragmentFinishedBinding
+import id.usereal.eventdicoding.ui.EventViewModel
 
 class FinishedFragment : Fragment() {
 
     private lateinit var binding: FragmentFinishedBinding
-
     private lateinit var adapter: EventAdapter
 
     override fun onCreateView(
@@ -22,39 +21,33 @@ class FinishedFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentFinishedBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val finishedViewModel =
-            ViewModelProvider(this).get(FinishedViewModel::class.java)
-        finishedViewModel.fetchFinishedEvents()
 
-        finishedViewModel.events.observe(viewLifecycleOwner){ event ->
-            setupRecyclerView(event)
-        }
+        adapter = EventAdapter()
+
         binding.tvEventFinished.layoutManager = LinearLayoutManager(requireContext())
-        
-        finishedViewModel.isLoading.observe(viewLifecycleOwner){
-            showLoading(it)
-        }
-
-        finishedViewModel.showNoEvent.observe(viewLifecycleOwner){
-            showNoEventText(it)
-        }
-
-    }
-
-    private fun setupRecyclerView(listEvent: List<Event>) {
-        binding.tvEventFinished.layoutManager = LinearLayoutManager(requireContext())
-        adapter = EventAdapter(listEvent)
         binding.tvEventFinished.adapter = adapter
-    }
 
+        val finishedViewModel = ViewModelProvider(this)[EventViewModel::class.java]
+
+        finishedViewModel.fetchFinishedEvents()
+        finishedViewModel.events.observe(viewLifecycleOwner) { eventList ->
+            adapter.submitList(eventList)
+        }
+
+        finishedViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            showLoading(isLoading)
+        }
+
+        finishedViewModel.showNoEvent.observe(viewLifecycleOwner) { show ->
+            showNoEventText(show)
+        }
+    }
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE

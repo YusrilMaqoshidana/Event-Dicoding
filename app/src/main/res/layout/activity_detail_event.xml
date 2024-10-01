@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.detailevent.DetailEvent">
+    tools:context="DetailEventActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
             android:scaleType="centerCrop"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/backgrounds/scenic"
-            android:contentDescription="cover_image" />
+            android:contentDescription="@string/cover_image" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
@@ -116,7 +116,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="event descripsi"
+                    android:text="@string/event_descripsi"
                     android:textStyle="bold" />
 
                 <TextView
@@ -124,14 +124,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    tools:text="Karir IT memiliki banyak cabang, mulai dari Software, Hardware, Jaringan, Sistem Cerdas..." />
+                    tools:text="@string/karir_it_memiliki_banyak_cabang_mulai_dari_software_hardware_jaringan_sistem_cerdas" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_register"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:text="register"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/register"
                     android:textColor="#FFFFFF" />
 
             </LinearLayout>

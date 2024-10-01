@@ -1,7 +1,9 @@
 package id.usereal.eventdicoding.data
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 
+@kotlinx.parcelize.Parcelize
 data class Event(
 
     @field:SerializedName("summary")
@@ -45,4 +47,4 @@ data class Event(
 
     @field:SerializedName("category")
     val category: String? = null
-)
+) : Parcelable

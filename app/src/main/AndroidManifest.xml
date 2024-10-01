@@ -13,13 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventDicoding"
         tools:targetApi="31">
-        <activity
-            android:name=".ui.detailevent.DetailEvent"
-            android:exported="false" />
+        <activity android:name="DetailEventActivity"
+            android:exported="false">
+
+        </activity>
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true"
-            android:label="@string/app_name">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
