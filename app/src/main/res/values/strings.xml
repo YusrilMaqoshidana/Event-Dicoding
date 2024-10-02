@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">EventDicoding</string>
     <string name="title_upcoming">UpComing</string>
     <string name="title_finished">Finished</string>
     <string name="title_notifications">Notifications</string>
@@ -19,4 +18,7 @@
     <string name="pendaftar">Pendaftar: %1$s</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="upcoming_event">Upcoming Event</string>
+    <string name="finished_event">Finished Event</string>
+    <string name="dicoding_event">Dicoding Event</string>
 </resources>

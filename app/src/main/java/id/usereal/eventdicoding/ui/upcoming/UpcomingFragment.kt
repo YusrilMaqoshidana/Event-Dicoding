@@ -5,9 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import id.usereal.eventdicoding.R
 import id.usereal.eventdicoding.databinding.FragmentUpcomingBinding
 import id.usereal.eventdicoding.ui.EventViewModel
 
@@ -23,22 +26,24 @@ class UpcomingFragment : Fragment() {
     ): View {
         binding = FragmentUpcomingBinding.inflate(inflater, container, false)
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (activity as AppCompatActivity).setSupportActionBar(binding.toolbarUpcoming)
+        (activity as AppCompatActivity).supportActionBar?.title = "Upcoming Event"
         adapter = EventAdapter()
 
-        binding.tvEventUpcoming.layoutManager = LinearLayoutManager(requireContext())
         binding.tvEventUpcoming.adapter = adapter
+        binding.tvEventUpcoming.layoutManager = LinearLayoutManager(requireContext())
 
         val upcomingViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[EventViewModel::class.java]
         upcomingViewModel.fetchUpcomingEvents()
         upcomingViewModel.events.observe(viewLifecycleOwner) { eventList ->
             adapter.submitList(eventList)
         }
-
         upcomingViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             showLoading(isLoading)
         }

@@ -1,4 +1,5 @@
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
@@ -6,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import id.usereal.eventdicoding.ui.detail.DetailEventActivity
 import id.usereal.eventdicoding.data.Event
 import id.usereal.eventdicoding.databinding.CardItemEventBinding
 
@@ -17,9 +19,7 @@ class EventAdapter : ListAdapter<Event, EventAdapter.EventViewHolder>(DIFF_CALLB
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
         val event = getItem(position)
-        if (event != null) {
-            holder.bind(event)
-        }
+        holder.bind(event)
     }
 
     class EventViewHolder(private val binding: CardItemEventBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -29,17 +29,20 @@ class EventAdapter : ListAdapter<Event, EventAdapter.EventViewHolder>(DIFF_CALLB
                 event.description.toString(),
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             )
-            binding.quotaTextView.text = String.format("Jumlah kuota: %s", event.quota.toString())
+            binding.quotaTextView.text = String.format("Sisa Kuota: %s/%s",  event.registrants.toString(), event.quota.toString())
             Glide.with(itemView.context)
                 .load(event.imageLogo)
                 .into(binding.itemImageView)
 
             itemView.setOnClickListener {
-                val intent = Intent(itemView.context, DetailEventActivity::class.java).apply {
-                    putExtra(DetailEventActivity.EVENT_DETAIL, event.id)
-                }
-                itemView.context.startActivity(intent)
+                event.id?.let { id ->
+                    val intent = Intent(itemView.context, DetailEventActivity::class.java).apply {
+                        putExtra(DetailEventActivity.EVENT_DETAIL, id.toString()) // Pastikan ID dalam bentuk String
+                    }
+                    itemView.context.startActivity(intent)
+                } ?: Log.e("EventAdapter", "Event ID is null")
             }
+
         }
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,9 +28,9 @@ class FinishedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        (activity as AppCompatActivity).setSupportActionBar(binding.toolbarFinished)
+        (activity as AppCompatActivity).supportActionBar?.title = "Finished Event"
         adapter = EventAdapter()
-
         binding.tvEventFinished.layoutManager = LinearLayoutManager(requireContext())
         binding.tvEventFinished.adapter = adapter
 

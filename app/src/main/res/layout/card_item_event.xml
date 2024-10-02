@@ -7,6 +7,8 @@
     android:layout_marginTop="16dp"
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
+    android:id="@+id/cardView"
+    app:cardElevation="6dp"
     app:cardCornerRadius="8dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.0"
@@ -78,7 +80,7 @@
             android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider"
-            tools:text="Jumlah kuota: %s" />
+            tools:text="Jumlah kuota: %s/%s" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
