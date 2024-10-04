@@ -3,28 +3,28 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
 }
-
 android {
     namespace = "id.usereal.eventdicoding"
     compileSdk = 34
-
     defaultConfig {
         applicationId = "id.usereal.eventdicoding"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
+            buildConfigField("String", "BASE_URL", "\"https://event-api.dicoding.dev/\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://event-api.dicoding.dev/\"")
         }
     }
     compileOptions {
@@ -36,6 +36,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 

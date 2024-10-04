@@ -1,24 +1,24 @@
 <resources>
     <string name="title_upcoming">UpComing</string>
     <string name="title_finished">Finished</string>
-    <string name="title_notifications">Notifications</string>
     <string name="no_event">Tidak Ada Event</string>
     <string name="event_image">event image</string>
     <string name="cover_image">cover_image</string>
     <string name="event_descripsi">event descripsi</string>
     <string name="register">register</string>
-    <string name="karir_it_memiliki_banyak_cabang_mulai_dari_software_hardware_jaringan_sistem_cerdas">Karir IT memiliki banyak cabang, mulai dari Software, Hardware, Jaringan, Sistem Cerdas...</string>
-    <string name="event_id_tidak_ditemukan">Event ID tidak ditemukan</string>
     <string name="kategori">Kategori: %1$s</string>
     <string name="penyelenggara">Penyelenggara: %1$s</string>
     <string name="lokasi">Lokasi: %1$s</string>
     <string name="tanggal">Tanggal: %1$s</string>
     <string name="waktu">Waktu: %1$s - %2$s</string>
-    <string name="kuota">Kuota: %1$s</string>
-    <string name="pendaftar">Pendaftar: %1$s</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="kuota">Sisa Kuota: %1$s</string>
     <string name="upcoming_event">Upcoming Event</string>
     <string name="finished_event">Finished Event</string>
     <string name="dicoding_event">Dicoding Event</string>
+    <string name="image_logo">image logo</string>
+    <string name="home">Home</string>
+    <string name="search">Search...</string>
+    <string name="title">title</string>
+    <string name="avatar">Avatar</string>
+    <string name="tidak_dapat_diakses">Tidak dapat diakses</string>
 </resources>

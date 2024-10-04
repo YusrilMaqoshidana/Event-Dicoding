@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import id.usereal.eventdicoding.databinding.FragmentFinishedBinding
-import id.usereal.eventdicoding.ui.EventViewModel
 
 class FinishedFragment : Fragment() {
 
@@ -34,10 +34,10 @@ class FinishedFragment : Fragment() {
         binding.tvEventFinished.layoutManager = LinearLayoutManager(requireContext())
         binding.tvEventFinished.adapter = adapter
 
-        val finishedViewModel = ViewModelProvider(this)[EventViewModel::class.java]
+        val finishedViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[FinishedViewModel::class.java]
 
-        finishedViewModel.fetchFinishedEvents()
-        finishedViewModel.events.observe(viewLifecycleOwner) { eventList ->
+        finishedViewModel.fetchApiFinished()
+        finishedViewModel.eventsFinished.observe(viewLifecycleOwner) { eventList ->
             adapter.submitList(eventList)
         }
 
@@ -47,6 +47,12 @@ class FinishedFragment : Fragment() {
 
         finishedViewModel.showNoEvent.observe(viewLifecycleOwner) { show ->
             showNoEventText(show)
+        }
+
+        finishedViewModel.snackbarMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 

@@ -1,5 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<resources >
     <style name="Theme.EventDicoding" parent="Theme.MaterialComponents.DayNight.NoActionBar">
     </style>
 </resources>

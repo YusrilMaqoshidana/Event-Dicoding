@@ -1,6 +1,5 @@
 package id.usereal.eventdicoding.ui.detail
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +17,12 @@ class DetailEventViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _showNoEvent = MutableLiveData<Boolean>()
+    val showNoEvent: LiveData<Boolean> = _showNoEvent
+
+    private val _snackbarMessage = MutableLiveData<String>()
+    val snackbarMessage: LiveData<String> = _snackbarMessage
+
     fun fetchDetailEvent(eventId: String) {
         _isLoading.value = true
         val client = ApiConfig.getApiService().getDetailEvent(eventId.toInt())
@@ -28,21 +33,21 @@ class DetailEventViewModel : ViewModel() {
                     val data = response.body()?.event
                     if (data != null) {
                         _event.value = data
-                        Log.d("TAG: onResponseDetail", "onResponse: $data")
                     } else {
-                        Log.d("TAG: onResponse", "Data tidak ditemukan $data")
-                        // Handle the case when data is null, e.g. show an error message
+                        _showNoEvent.value = true
+                        _snackbarMessage.value = "Data tidak ditemukan"
                     }
                 } else {
-                    _isLoading.value = true
-                    Log.d("TAG: onResponse", "onFailure: ${response.message()}")
+                    _snackbarMessage.value = "Gagal mendapatkan data: ${response.message()}"
                 }
             }
 
-
             override fun onFailure(call: Call<DetailEvent>, t: Throwable) {
-                Log.d("TAG: onFailure", "onFailure: ${t.message.toString()}")
+                _isLoading.value = false
+                _showNoEvent.value = true
+                _snackbarMessage.value = "Gagal Mengakses Konten"
             }
+
         })
 
     }

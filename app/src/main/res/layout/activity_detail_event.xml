@@ -2,28 +2,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".ui.detail.DetailEventActivity">
+
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarFinished"
+        android:id="@+id/toolbarDetail"
         android:layout_width="match_parent"
         android:background="@color/blue"
         android:layout_height="?attr/actionBarSize"
         android:elevation="4dp"
         app:titleTextColor="@color/white"
+        app:title="Detail Event" />
+    <TextView
+        android:id="@+id/tvNoDetailEvent"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/tidak_dapat_diakses"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:title="Detail Event" />
+        app:layout_constraintTop_toBottomOf="parent" />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <ImageView
                 android:id="@+id/iv_event_image"
                 android:layout_width="0dp"
@@ -160,14 +171,14 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_event_category"
                     tools:text="@string/event_descripsi" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_register"
-                    android:layout_width="0dp"
+                <Button
+                    android:id="@+id/btnRegister"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="@string/register"
                     android:textColor="#FFFFFF"
-                    android:background="@color/blue"
+                    android:backgroundTint="@color/blue"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -190,10 +201,11 @@
                     android:id="@+id/imageLogo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/image_logo"
+                    android:background="@drawable/image_stroke"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:srcCompat="@tools:sample/avatars" />
+                    app:layout_constraintTop_toTopOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
