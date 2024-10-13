@@ -1,4 +1,4 @@
-package id.usereal.eventdicoding.data
+package id.usereal.eventdicoding.data.remote.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName

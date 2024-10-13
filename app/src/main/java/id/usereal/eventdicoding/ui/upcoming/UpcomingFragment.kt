@@ -1,6 +1,5 @@
 package id.usereal.eventdicoding.ui.upcoming
 
-import EventAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,20 +10,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import id.usereal.eventdicoding.databinding.FragmentUpcomingBinding
+import id.usereal.eventdicoding.viewmodel.UpcomingViewModel
 
 class UpcomingFragment : Fragment() {
 
-    private lateinit var binding: FragmentUpcomingBinding
-    private lateinit var adapter: EventAdapter
+    private var _binding: FragmentUpcomingBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var adapter: UpcomingAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentUpcomingBinding.inflate(inflater, container, false)
+        _binding = FragmentUpcomingBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -32,12 +32,12 @@ class UpcomingFragment : Fragment() {
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbarUpcoming)
         (activity as AppCompatActivity).supportActionBar?.title = "Upcoming Event"
-        adapter = EventAdapter()
+        adapter = UpcomingAdapter()
 
-       with(binding){
-           tvEventUpcoming.adapter = adapter
-           tvEventUpcoming.layoutManager = LinearLayoutManager(requireContext())
-       }
+        with(binding) {
+            rvEventUpcoming.adapter = adapter
+            rvEventUpcoming.layoutManager = LinearLayoutManager(requireContext())
+        }
 
         val upcomingViewModel = ViewModelProvider(
             this,
@@ -65,14 +65,19 @@ class UpcomingFragment : Fragment() {
     private fun showLoading(isLoading: Boolean) {
         with(binding) {
             progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            tvEventUpcoming.visibility = if (isLoading) View.GONE else View.VISIBLE
+            rvEventUpcoming.visibility = if (isLoading) View.GONE else View.VISIBLE
         }
     }
 
     private fun showNoEventText(show: Boolean) {
         with(binding) {
             tvNoEventUpcoming.visibility = if (show) View.VISIBLE else View.GONE
-            tvEventUpcoming.visibility = if (show) View.GONE else View.VISIBLE
+            rvEventUpcoming.visibility = if (show) View.GONE else View.VISIBLE
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

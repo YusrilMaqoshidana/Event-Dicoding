@@ -1,6 +1,5 @@
 package id.usereal.eventdicoding.ui.finished
 
-import EventAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,35 +7,50 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import id.usereal.eventdicoding.databinding.FragmentFinishedBinding
+import id.usereal.eventdicoding.viewmodel.FinishedViewModel
 
 class FinishedFragment : Fragment() {
 
-    private lateinit var binding: FragmentFinishedBinding
-    private lateinit var adapter: EventAdapter
+    private var _binding: FragmentFinishedBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var adapter: FinishedAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFinishedBinding.inflate(inflater, container, false)
+        _binding = FragmentFinishedBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupToolbar()
+        setupRecyclerView()
+        setupViewModel()
+    }
+
+    private fun setupToolbar() {
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbarFinished)
         (activity as AppCompatActivity).supportActionBar?.title = "Finished Event"
-        adapter = EventAdapter()
-        binding.tvEventFinished.layoutManager = LinearLayoutManager(requireContext())
-        binding.tvEventFinished.adapter = adapter
+    }
 
+    private fun setupRecyclerView() {
+        adapter = FinishedAdapter()
+        binding.tvEventFinished.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.tvEventFinished.adapter = adapter
+    }
+
+    private fun setupViewModel() {
         val finishedViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[FinishedViewModel::class.java]
 
         finishedViewModel.fetchApiFinished()
+
         finishedViewModel.eventsFinished.observe(viewLifecycleOwner) { eventList ->
             adapter.submitList(eventList)
         }
@@ -64,5 +78,10 @@ class FinishedFragment : Fragment() {
     private fun showNoEventText(show: Boolean) {
         binding.tvNoEventFinished.visibility = if (show) View.VISIBLE else View.GONE
         binding.tvEventFinished.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

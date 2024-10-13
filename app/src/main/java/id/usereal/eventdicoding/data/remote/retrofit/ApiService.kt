@@ -1,7 +1,7 @@
-package id.usereal.eventdicoding.retrofit
+package id.usereal.eventdicoding.data.remote.retrofit
 
-import id.usereal.eventdicoding.data.DetailEvent
-import id.usereal.eventdicoding.data.EventResponse
+import id.usereal.eventdicoding.data.remote.model.DetailEvent
+import id.usereal.eventdicoding.data.remote.model.EventResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

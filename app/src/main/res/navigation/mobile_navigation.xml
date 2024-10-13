@@ -2,14 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/navigation_home">
-
-    <fragment
-        android:id="@+id/navigation_home"
-        android:name="id.usereal.eventdicoding.ui.home.HomeFragment"
-        android:title="@string/home"
-        tools:layout="@layout/fragment_home" />
-
+    app:startDestination="@id/navigation_upcoming">
     <fragment
         android:id="@+id/navigation_upcoming"
         android:name="id.usereal.eventdicoding.ui.upcoming.UpcomingFragment"
@@ -22,6 +15,20 @@
         android:name="id.usereal.eventdicoding.ui.finished.FinishedFragment"
         android:title="@string/title_finished"
         tools:layout="@layout/fragment_finished" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_favorite"
+        android:name="id.usereal.eventdicoding.ui.favorite.FavoriteFragment"
+        android:title="@string/favorite"
+        tools:layout="@layout/fragment_favorite" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="id.usereal.eventdicoding.ui.settings.SettingsFragment"
+        android:title="@string/settings"
+        tools:layout="@layout/fragment_settings" >
     </fragment>
 
 

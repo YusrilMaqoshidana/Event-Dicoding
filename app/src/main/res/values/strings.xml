@@ -21,4 +21,13 @@
     <string name="title">title</string>
     <string name="avatar">Avatar</string>
     <string name="tidak_dapat_diakses">Tidak dapat diakses</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="favorite">Favorite</string>
+    <string name="settings">Settings</string>
+    <string name="favorite_label">favorite_label</string>
+    <string name="your_description_here_this_text_should_be_truncated_to_a_maximum_of_two_lines">Your description here. This text should be truncated to a maximum of two lines.</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="enable_disable_dark_mode">Enable/Disable Dark Mode</string>
+    <string name="my_favorite_event">My Favorite Event</string>
 </resources>

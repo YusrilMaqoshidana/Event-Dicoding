@@ -1,3 +1,5 @@
+package id.usereal.eventdicoding.ui.upcoming
+
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,13 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import id.usereal.eventdicoding.R
 import id.usereal.eventdicoding.ui.detail.DetailEventActivity
-import id.usereal.eventdicoding.data.Event
-import id.usereal.eventdicoding.databinding.CardItemEventBinding
+import id.usereal.eventdicoding.data.remote.model.Event
+import id.usereal.eventdicoding.databinding.CardEventUpcomingBinding
 
-class EventAdapter : ListAdapter<Event, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
+class UpcomingAdapter : ListAdapter<Event, UpcomingAdapter.EventViewHolder>(DIFF_CALLBACK) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val binding =
-            CardItemEventBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            CardEventUpcomingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return EventViewHolder(binding)
     }
 
@@ -23,7 +25,7 @@ class EventAdapter : ListAdapter<Event, EventAdapter.EventViewHolder>(DIFF_CALLB
         holder.bind(event)
     }
 
-    class EventViewHolder(private val binding: CardItemEventBinding) :
+    class EventViewHolder(private val binding: CardEventUpcomingBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(event: Event) {
             with(binding) {
@@ -43,7 +45,7 @@ class EventAdapter : ListAdapter<Event, EventAdapter.EventViewHolder>(DIFF_CALLB
 
                 Glide.with(itemView.context)
                     .load(event.imageLogo)
-                    .into(itemImageView)
+                    .into(itemImageLogo)
 
             }
             itemView.setOnClickListener {

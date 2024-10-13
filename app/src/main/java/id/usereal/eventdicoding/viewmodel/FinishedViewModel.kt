@@ -1,11 +1,11 @@
-package id.usereal.eventdicoding.ui.finished
+package id.usereal.eventdicoding.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import id.usereal.eventdicoding.data.Event
-import id.usereal.eventdicoding.data.EventResponse
-import id.usereal.eventdicoding.retrofit.ApiConfig
+import id.usereal.eventdicoding.data.remote.model.Event
+import id.usereal.eventdicoding.data.remote.model.EventResponse
+import id.usereal.eventdicoding.data.remote.retrofit.ApiConfig
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
