@@ -21,7 +21,7 @@ class ViewModelFactory private constructor(
         @Volatile
         private var instance: ViewModelFactory? = null
 
-        fun getInstance(context: Context, pref: SettingPreferences): ViewModelFactory =
+        fun getInstance(pref: SettingPreferences): ViewModelFactory =
             instance ?: synchronized(this) {
                 instance ?: ViewModelFactory(
                     pref

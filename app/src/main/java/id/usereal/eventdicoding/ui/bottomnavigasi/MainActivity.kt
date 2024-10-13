@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         // Inisialisasi SettingsViewModel menggunakan ViewModelFactory
         settingsViewModel = ViewModelProvider(
             this,
-            ViewModelFactory.getInstance(this, pref)
+            ViewModelFactory.getInstance(pref)
         )[SettingsViewModel::class.java]
 
         // Observasi perubahan tema dari SettingsViewModel

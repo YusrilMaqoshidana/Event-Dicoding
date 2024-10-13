@@ -1,5 +1,6 @@
 package id.usereal.eventdicoding.di
 
+import ViewModelFactory
 import id.usereal.eventdicoding.ui.settings.SettingPreferences
 import android.content.Context
 import id.usereal.eventdicoding.data.local.room.EventRoomDatabase
