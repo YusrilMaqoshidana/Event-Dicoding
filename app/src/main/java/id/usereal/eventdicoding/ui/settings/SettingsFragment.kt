@@ -7,15 +7,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
-
+import androidx.fragment.app.viewModels
 import id.usereal.eventdicoding.databinding.FragmentSettingsBinding
 
 class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var settingsViewModel: SettingsViewModel
-
+    private val settingViewModel: SettingsViewModel by viewModels {
+        ViewModelFactory.getInstance(requireContext())
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,14 +28,13 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val switchTheme = binding.darkModeSwitch
-        val pref = SettingPreferences.getInstance(requireContext().dataStore)
 
-        settingsViewModel = ViewModelProvider(
-            this,
-            ViewModelFactory.getInstance(pref)
-        )[SettingsViewModel::class.java]
+        settingViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive ->
+            switchTheme.isChecked = isDarkModeActive
+        }
+
         switchTheme.setOnCheckedChangeListener { _, isChecked ->
-            settingsViewModel.saveThemeSetting(isChecked)
+            settingViewModel.saveThemeSetting(isChecked)
         }
     }
 

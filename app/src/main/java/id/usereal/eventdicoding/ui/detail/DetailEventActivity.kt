@@ -1,7 +1,4 @@
-package id.usereal.eventdicoding.ui.detail
-
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -12,11 +9,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import id.usereal.eventdicoding.R
-import id.usereal.eventdicoding.data.remote.model.Event
 import id.usereal.eventdicoding.databinding.ActivityDetailEventBinding
 import id.usereal.eventdicoding.viewmodel.DetailEventViewModel
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class DetailEventActivity : AppCompatActivity() {
 

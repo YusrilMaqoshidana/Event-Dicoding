@@ -66,10 +66,9 @@ dependencies {
     implementation (libs.converter.gson)
     implementation (libs.logging.interceptor)
     implementation (libs.androidx.activity.ktx)
-
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.room.compiler)
+    implementation (libs.androidx.room.runtime.v243)
+    implementation (libs.androidx.room.ktx.v243)
+    ksp(libs.androidx.room.compiler.v243)
     implementation (libs.kotlinx.coroutines.android)
 
 }

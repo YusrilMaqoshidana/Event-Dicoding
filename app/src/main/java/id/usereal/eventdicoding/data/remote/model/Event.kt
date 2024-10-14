@@ -2,49 +2,49 @@ package id.usereal.eventdicoding.data.remote.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
-@kotlinx.parcelize.Parcelize
+@Parcelize
 data class Event(
-
-    @field:SerializedName("summary")
-    val summary: String? = null,
-
-    @field:SerializedName("mediaCover")
-    val mediaCover: String? = null,
-
-    @field:SerializedName("registrants")
-    val registrants: Int? = null,
-
-    @field:SerializedName("imageLogo")
-    val imageLogo: String? = null,
-
-    @field:SerializedName("link")
-    val link: String? = null,
-
-    @field:SerializedName("description")
-    val description: String? = null,
-
-    @field:SerializedName("ownerName")
-    val ownerName: String? = null,
-
-    @field:SerializedName("cityName")
-    val cityName: String? = null,
-
-    @field:SerializedName("quota")
-    val quota: Int? = null,
+    @field:SerializedName("id")
+    val id: String,
 
     @field:SerializedName("name")
-    val name: String? = null,
+    val name: String,
 
-    @field:SerializedName("id")
-    val id: Int? = null,
+    @field:SerializedName("summary")
+    val summary: String,
+
+    @field:SerializedName("mediaCover")
+    val mediaCover: String,
+
+    @field:SerializedName("registrants")
+    val registrants: Int,
+
+    @field:SerializedName("imageLogo")
+    val imageLogo: String,
+
+    @field:SerializedName("link")
+    val link: String,
+
+    @field:SerializedName("description")
+    val description: String,
+
+    @field:SerializedName("ownerName")
+    val ownerName: String,
+
+    @field:SerializedName("cityName")
+    val cityName: String,
+
+    @field:SerializedName("quota")
+    val quota: Int,
 
     @field:SerializedName("beginTime")
-    val beginTime: String? = null,
+    val beginTime: String,
 
     @field:SerializedName("endTime")
-    val endTime: String? = null,
+    val endTime: String,
 
     @field:SerializedName("category")
-    val category: String? = null
+    val category: String
 ) : Parcelable

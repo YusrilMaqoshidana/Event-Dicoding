@@ -35,7 +35,7 @@
         app:endIconDrawable="@drawable/ic_clear">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/searchInput"
+            android:id="@+id/searchInputFinished"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionSearch"
@@ -43,10 +43,12 @@
             android:maxLines="1" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tvEventFinished"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="4dp"
         android:paddingTop="4dp"
         android:paddingBottom="50dp"
         app:layout_constraintBottom_toTopOf="@id/tvNoEventFinished"

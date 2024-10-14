@@ -1,31 +1,29 @@
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import id.usereal.eventdicoding.data.remote.retrofit.ApiConfig
+import id.usereal.eventdicoding.di.Injection
 import id.usereal.eventdicoding.ui.settings.SettingPreferences
+import id.usereal.eventdicoding.viewmodel.DetailEventViewModel
+import id.usereal.eventdicoding.viewmodel.EventViewModel
 
-class ViewModelFactory private constructor(
-    private val settingPreferences: SettingPreferences
-) : ViewModelProvider.NewInstanceFactory() {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
-            modelClass.isAssignableFrom(SettingsViewModel::class.java) -> {
-                SettingsViewModel(settingPreferences) as T
-            }
-            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+object ViewModelFactory {
+    fun getInstance(context: Context) = viewModelFactory {
+        val repository = Injection.provideRepository(context)
+        val pref = Injection.provideSettingPreferences(context)
+        initializer {
+            EventViewModel(repository)
         }
-    }
-
-    companion object {
-        @Volatile
-        private var instance: ViewModelFactory? = null
-
-        fun getInstance(pref: SettingPreferences): ViewModelFactory =
-            instance ?: synchronized(this) {
-                instance ?: ViewModelFactory(
-                    pref
-                ).also { instance = it }
-            }
+        initializer {
+            DetailEventViewModel(repository)
+        }
+        initializer {
+            FavoriteViewModel(repository)
+        }
+        initializer {
+            SettingsViewModel(pref)
+        }
     }
 }

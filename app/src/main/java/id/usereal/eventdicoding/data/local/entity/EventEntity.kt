@@ -1,25 +1,54 @@
 package id.usereal.eventdicoding.data.local.entity
 
-import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.parcelize.Parcelize
 
-@Entity
-@Parcelize
+@Entity(tableName = "eventsTable")
 data class EventEntity(
     @PrimaryKey
-    @ColumnInfo(name = "id")
-    val id: Int,
-    @ColumnInfo(name = "image")
-    val image: String,
-    @ColumnInfo(name = "title")
-    val title: String,
-    @ColumnInfo(name = "description")
+    @field:ColumnInfo(name = "id")
+    val id: String,
+
+    @field:ColumnInfo(name = "name")
+    val name: String,
+
+    @field:ColumnInfo(name = "summary")
+    val summary: String,
+
+    @field:ColumnInfo(name = "mediaCover")
+    val mediaCover: String,
+
+    @field:ColumnInfo(name = "registrants")
+    val registrants: Int,
+
+    @field:ColumnInfo(name = "imageLogo")
+    val imageLogo: String,
+
+    @field:ColumnInfo(name = "link")
+    val link: String,
+
+    @field:ColumnInfo(name = "description")
     val description: String,
-    @ColumnInfo(name = "quota")
+
+    @field:ColumnInfo(name = "ownerName")
+    val ownerName: String,
+
+    @field:ColumnInfo(name = "cityName")
+    val cityName: String,
+
+    @field:ColumnInfo(name = "quota")
     val quota: Int,
-    @ColumnInfo(name = "isFavorite")
-    var isFavorite: Boolean = false
-) : Parcelable
+
+    @field:ColumnInfo(name = "beginTime")
+    val beginTime: String,
+
+    @field:ColumnInfo(name = "endTime")
+    val endTime: String,
+
+    @field:ColumnInfo(name = "category")
+    val category: String,
+
+    @field:ColumnInfo(name = "isActive")
+    val isActive: Boolean
+)

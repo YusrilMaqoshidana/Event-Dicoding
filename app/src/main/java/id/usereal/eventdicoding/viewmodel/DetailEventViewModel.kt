@@ -3,52 +3,65 @@ package id.usereal.eventdicoding.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import id.usereal.eventdicoding.data.remote.model.DetailEvent
+import androidx.lifecycle.viewModelScope
+import id.usereal.eventdicoding.data.Results
+import id.usereal.eventdicoding.data.local.entity.EventEntity
+import id.usereal.eventdicoding.data.local.entity.FavoriteEntity
 import id.usereal.eventdicoding.data.remote.model.Event
-import id.usereal.eventdicoding.data.remote.retrofit.ApiConfig
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import id.usereal.eventdicoding.data.repository.EventRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
-class DetailEventViewModel : ViewModel() {
-    private val _event = MutableLiveData<Event?>()
-    val event: LiveData<Event?> = _event
+class DetailEventViewModel(private val repository: EventRepository) : ViewModel() {
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+    private val _isFavorite = MutableLiveData(false)
+    val isFavorite: LiveData<Boolean> = _isFavorite
 
-    private val _showNoEvent = MutableLiveData<Boolean>()
-    val showNoEvent: LiveData<Boolean> = _showNoEvent
+    private val _results = MutableLiveData<Results<EventEntity>>(Results.Loading)
+    val results: LiveData<Results<EventEntity>> = _results
 
-    private val _snackbarMessage = MutableLiveData<String>()
-    val snackbarMessage: LiveData<String> = _snackbarMessage
-
+    // Fetch event details by ID
     fun fetchDetailEvent(eventId: String) {
-        _isLoading.value = true
-        val client = ApiConfig.getApiService().getDetailEvent(eventId.toInt())
-        client.enqueue(object : Callback<DetailEvent> {
-            override fun onResponse(call: Call<DetailEvent>, response: Response<DetailEvent>) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    val data = response.body()?.event
-                    if (data != null) {
-                        _event.value = data
-                    } else {
-                        _showNoEvent.value = true
-                        _snackbarMessage.value = "Data tidak ditemukan"
-                    }
-                } else {
-                    _snackbarMessage.value = "Gagal mendapatkan data: ${response.message()}"
-                }
+        repository.getDetailById(eventId).observeForever { result ->
+            viewModelScope.launch {
+                _results.value = result
+                checkFavoriteStatus(eventId)
             }
+        }
+    }
 
-            override fun onFailure(call: Call<DetailEvent>, t: Throwable) {
-                _isLoading.value = false
-                _showNoEvent.value = true
-                _snackbarMessage.value = "Gagal Mengakses Konten"
+    // Check if the event is in the favorites list
+    private fun checkFavoriteStatus(eventId: String) {
+        viewModelScope.launch {
+            val isFavorited = repository.isEventFavorite(eventId)
+            _isFavorite.postValue(isFavorited)
+        }
+    }
+
+    fun toggleFavorite() {
+        val currentEvent = (_results.value as? Results.Success)?.data ?: return
+        val currentFavoriteStatus = _isFavorite.value ?: false
+
+        viewModelScope.launch {
+            if (currentFavoriteStatus) {
+                repository.deleteFavoriteEvent(
+                    FavoriteEntity(
+                        id = currentEvent.id.toString()
+                    )
+                )
+            } else {
+                repository.addFavoriteEvent(
+                    FavoriteEntity(
+                        id = currentEvent.id.toString()
+                    )
+                )
             }
-
-        })
-
+            _isFavorite.value = !currentFavoriteStatus
+        }
     }
 }

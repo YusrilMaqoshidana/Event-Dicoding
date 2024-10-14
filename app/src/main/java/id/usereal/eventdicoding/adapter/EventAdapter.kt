@@ -1,5 +1,4 @@
-package id.usereal.eventdicoding.ui.upcoming
-
+import DetailEventActivity
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,11 +8,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import id.usereal.eventdicoding.R
-import id.usereal.eventdicoding.ui.detail.DetailEventActivity
-import id.usereal.eventdicoding.data.remote.model.Event
+import id.usereal.eventdicoding.data.local.entity.EventEntity
 import id.usereal.eventdicoding.databinding.CardEventUpcomingBinding
 
-class UpcomingAdapter : ListAdapter<Event, UpcomingAdapter.EventViewHolder>(DIFF_CALLBACK) {
+class EventAdapter : ListAdapter<EventEntity, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val binding =
             CardEventUpcomingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -27,15 +25,15 @@ class UpcomingAdapter : ListAdapter<Event, UpcomingAdapter.EventViewHolder>(DIFF
 
     class EventViewHolder(private val binding: CardEventUpcomingBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(event: Event) {
+        fun bind(event: EventEntity) {
             with(binding) {
                 titleTextView.text = event.name
                 descriptionTextView.text = HtmlCompat.fromHtml(
-                    event.description.toString(),
+                    event.description ?: "",
                     HtmlCompat.FROM_HTML_MODE_LEGACY
                 )
 
-                val sisaQuota = event.quota?.minus(event.registrants!!) ?: 0
+                val sisaQuota = event.quota?.minus(event.registrants ?: 0) ?: 0
 
                 quotaTextView.text = if (sisaQuota > 0) {
                     itemView.context.getString(R.string.kuota, sisaQuota.toString())
@@ -46,7 +44,6 @@ class UpcomingAdapter : ListAdapter<Event, UpcomingAdapter.EventViewHolder>(DIFF
                 Glide.with(itemView.context)
                     .load(event.imageLogo)
                     .into(itemImageLogo)
-
             }
             itemView.setOnClickListener {
                 event.id?.let { id ->
@@ -60,12 +57,12 @@ class UpcomingAdapter : ListAdapter<Event, UpcomingAdapter.EventViewHolder>(DIFF
     }
 
     companion object {
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Event>() {
-            override fun areItemsTheSame(oldItem: Event, newItem: Event): Boolean {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<EventEntity>() {
+            override fun areItemsTheSame(oldItem: EventEntity, newItem: EventEntity): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: Event, newItem: Event): Boolean {
+            override fun areContentsTheSame(oldItem: EventEntity, newItem: EventEntity): Boolean {
                 return oldItem == newItem
             }
         }
