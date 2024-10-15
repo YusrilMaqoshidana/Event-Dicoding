@@ -30,7 +30,7 @@ interface EventDao {
 
 
     @Query("SELECT * FROM eventsTable WHERE isActive = :isActive AND name LIKE '%' || :query || '%' ORDER BY date(beginTime) ASC")
-    fun searchEvents(query: String, isActive: Int): List<EventEntity>
+    suspend fun searchEvents(query: String, isActive: Int): List<EventEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavorite(favorite: FavoriteEntity)

@@ -34,7 +34,7 @@
         app:endIconDrawable="@drawable/ic_clear">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/searchInputFinished"
+            android:id="@+id/searchInputUpcoming"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionSearch"
@@ -45,9 +45,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEventUpcoming"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
         android:clipToPadding="false"
         android:paddingTop="4dp"
         android:paddingBottom="50dp"
@@ -80,5 +82,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchEvent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:paddingBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textField" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

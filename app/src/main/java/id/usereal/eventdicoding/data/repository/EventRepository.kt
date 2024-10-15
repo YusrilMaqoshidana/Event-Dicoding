@@ -119,16 +119,48 @@ class EventRepository private constructor(
         Log.d(TAG, "Searching events with query: $query")
         try {
             val searchResult = eventDao.searchEvents(query, active)
+            Log.d(TAG, "Search results: ${searchResult.size}")
             if (searchResult.isNotEmpty()) {
                 emit(Results.Success(searchResult))
-            } else{
-                emit(Results.Error("Tidak ada event"))
+            } else {
+                try {
+                    val response = apiService.searchEvents(active, query)
+                    val events = response.event
+                    val eventList = events.map { event ->
+                        EventEntity(
+                            id = event.id,
+                            name = event.name,
+                            summary = event.summary,
+                            mediaCover = event.mediaCover,
+                            registrants = event.registrants,
+                            imageLogo = event.imageLogo,
+                            link = event.link,
+                            description = event.description,
+                            ownerName = event.ownerName,
+                            cityName = event.cityName,
+                            quota = event.quota,
+                            beginTime = event.beginTime,
+                            endTime = event.endTime,
+                            category = event.category,
+                            isActive = false
+                        )
+                    }
+                    Log.d(TAG, "Inserted ${events.size} finished events into local database.")
+                    eventDao.deleteFinishedEvents()
+                    eventDao.insertEvents(eventList)
+                    Log.d(TAG, "Inserted ${eventList.size} finished events into local database.")
+                    emit(Results.Success(eventList))
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error fetching finished events from API: ${e.message}")
+                    emit(Results.Error("Event tidak ditemukan"))
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error searching events: ${e.message}")
-            emit(Results.Error("Event Favorit tidak ditemukan"))
+            emit(Results.Error("Event tidak ditemukan"))
         }
     }
+
 
     fun getFavoriteEvents(): Flow<Results<List<EventEntity>>> {
         return eventDao.getFavoriteEvents()

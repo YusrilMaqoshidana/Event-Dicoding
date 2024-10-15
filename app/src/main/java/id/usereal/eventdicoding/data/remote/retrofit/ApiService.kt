@@ -14,7 +14,9 @@ interface ApiService {
     @GET("events?active=0")
     suspend fun getFinishedEvents(): EventResponse
 
-    @GET("events/{id}")
-    suspend fun getDetailEvent(@Path("id") id: String): DetailEvent
-
+    @GET("events")
+    fun searchEvents(
+        @Query("active") active: Int,
+        @Query("q") query: String? = null
+    ): EventResponse
 }

@@ -1,5 +1,4 @@
 package id.usereal.eventdicoding.viewmodel
-
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.*
@@ -12,7 +11,6 @@ class DetailEventViewModel(private val repository: EventRepository) : ViewModel(
 
     private val _isFavorite = MutableLiveData<Boolean>()
     val isFavorite: LiveData<Boolean> = _isFavorite
-
     private val _event = MutableLiveData<Results<EventEntity>>()
     val event: LiveData<Results<EventEntity>> = _event
 
@@ -26,7 +24,6 @@ class DetailEventViewModel(private val repository: EventRepository) : ViewModel(
             }
         }
     }
-
     private fun checkFavoriteStatus(eventId: String) {
         viewModelScope.launch {
             repository.isEventFavorite(eventId).collect { isFavorite ->
@@ -34,7 +31,6 @@ class DetailEventViewModel(private val repository: EventRepository) : ViewModel(
             }
         }
     }
-
     fun toggleFavorite(event: EventEntity, context: Context) {
         viewModelScope.launch {
             val currentFavoriteStatus = _isFavorite.value ?: false

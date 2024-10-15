@@ -1,15 +1,16 @@
 package id.usereal.eventdicoding.ui.finished
 
 import EventAdapter
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
+import SearchAdapter
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import id.usereal.eventdicoding.data.Results
 import id.usereal.eventdicoding.databinding.FragmentFinishedBinding
@@ -28,13 +30,12 @@ class FinishedFragment : Fragment() {
     private var _binding: FragmentFinishedBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: EventAdapter
+    private lateinit var searchAdapter: SearchAdapter
     private val eventViewModel: EventViewModel by viewModels {
-        ViewModelFactory.getInstance(
-            requireContext()
-        )
+        ViewModelFactory.getInstance(requireContext())
     }
-    private lateinit var connectivityManager: ConnectivityManager
-    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
+
+    private val TAG = "FinishedFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +52,7 @@ class FinishedFragment : Fragment() {
         setupToolbar()
         setupRecyclerView()
         observeFinishedEvents()
+        setupSearchFunctionality()
     }
 
     private fun setupToolbar() {
@@ -66,29 +68,110 @@ class FinishedFragment : Fragment() {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = this@FinishedFragment.adapter
         }
+
+        searchAdapter = SearchAdapter()
+        binding.rvSearchEvent.apply {
+            adapter = this@FinishedFragment.searchAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun setupSearchFunctionality() {
+        binding.searchInputFinished.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                performSearch(binding.searchInputFinished.text.toString())
+                return@setOnEditorActionListener true
+            }
+            false
+        }
+        binding.textField.setEndIconOnClickListener { clearSearch() }
+        binding.searchInputFinished.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (s.isNullOrEmpty()) {
+                    clearSearch()
+                } else {
+                    updateVisibilityForSearchResults(true)
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+    }
+
+    private fun performSearch(query: String) {
+        Log.d(TAG, "Performing search for query: $query")
+        if (query.isNotEmpty()) {
+            eventViewModel.searchEvent(query, 0).observe(viewLifecycleOwner) { result ->
+                when (result) {
+                    is Results.Loading -> showLoading(true)
+                    is Results.Success -> {
+                        showLoading(false)
+                        val events = result.data
+                        Log.d(TAG, "Search results loaded: ${events.size} items")
+                        searchAdapter.submitList(events)
+                        updateVisibilityForSearchResults(events.isNotEmpty())
+                    }
+                    is Results.Error -> {
+                        showLoading(false)
+                        showSnackbar(result.error)
+                        updateVisibilityForSearchResults(false) // No results found
+                        Log.e(TAG, "Error loading search results: ${result.error}")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun clearSearch() {
+        Log.d(TAG, "Clearing search input")
+        binding.searchInputFinished.text?.clear()
+        updateVisibilityForSearchResults(false)
+        showInitialView()
+    }
+
+    private fun showInitialView() {
+        binding.tvEventFinished.visibility = View.VISIBLE
+        binding.rvSearchEvent.visibility = View.GONE
+        binding.tvNoEventFinished.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+    }
+
+    private fun updateVisibilityForSearchResults(isSearching: Boolean) {
+        binding.rvSearchEvent.visibility = if (isSearching) View.VISIBLE else View.GONE
+        binding.tvEventFinished.visibility = if (isSearching) View.GONE else View.VISIBLE
+        binding.tvNoEventFinished.visibility = if (isSearching && searchAdapter.itemCount == 0) View.VISIBLE else View.GONE
+        Log.d(TAG, "Updating visibility for search results: isSearching=$isSearching, itemCount=${searchAdapter.itemCount}")
     }
 
     private fun showNoEventText(show: Boolean) {
         binding.tvNoEventFinished.visibility = if (show) View.VISIBLE else View.GONE
         binding.tvEventFinished.visibility = if (show) View.GONE else View.VISIBLE
+        Log.d(TAG, "Showing no event text: show=$show")
     }
 
     private fun observeFinishedEvents() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                eventViewModel.getFinishedEvents().observeForever() { result ->
+                eventViewModel.getFinishedEvents().observe(viewLifecycleOwner) { result ->
                     when (result) {
-                        is Results.Loading -> showLoading(true)
+                        is Results.Loading -> {
+                            Log.d(TAG, "Finished events loading")
+                            showLoading(true)
+                        }
                         is Results.Success -> {
                             showLoading(false)
                             val events = result.data
+                            Log.d(TAG, "Finished events loaded: ${events.size} items")
                             adapter.submitList(events)
                             showNoEventText(events.isEmpty())
                         }
                         is Results.Error -> {
                             showLoading(false)
                             showSnackbar(result.error)
-                            showNoEventText(true)  // Show "No Event" text on error as well
+                            showNoEventText(true) // Show "No Event" text on error as well
+                            Log.e(TAG, "Error loading finished events: ${result.error}")
                         }
                     }
                 }
@@ -103,6 +186,10 @@ class FinishedFragment : Fragment() {
 
     private fun showSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+    }
+    override fun onResume() {
+        super.onResume()
+        clearSearch()
     }
 
     override fun onDestroyView() {
