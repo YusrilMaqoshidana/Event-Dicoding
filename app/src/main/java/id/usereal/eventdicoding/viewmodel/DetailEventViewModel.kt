@@ -1,65 +1,49 @@
 package id.usereal.eventdicoding.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.content.Context
+import android.widget.Toast
+import androidx.lifecycle.*
 import id.usereal.eventdicoding.data.Results
 import id.usereal.eventdicoding.data.local.entity.EventEntity
-import id.usereal.eventdicoding.data.local.entity.FavoriteEntity
-import id.usereal.eventdicoding.data.remote.model.Event
 import id.usereal.eventdicoding.data.repository.EventRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 class DetailEventViewModel(private val repository: EventRepository) : ViewModel() {
 
-    private val _isFavorite = MutableLiveData(false)
+    private val _isFavorite = MutableLiveData<Boolean>()
     val isFavorite: LiveData<Boolean> = _isFavorite
 
-    private val _results = MutableLiveData<Results<EventEntity>>(Results.Loading)
-    val results: LiveData<Results<EventEntity>> = _results
+    private val _event = MutableLiveData<Results<EventEntity>>()
+    val event: LiveData<Results<EventEntity>> = _event
 
-    // Fetch event details by ID
-    fun fetchDetailEvent(eventId: String) {
-        repository.getDetailById(eventId).observeForever { result ->
-            viewModelScope.launch {
-                _results.value = result
-                checkFavoriteStatus(eventId)
+    fun getDetailById(eventId: String) {
+        viewModelScope.launch {
+            repository.getDetailById(eventId).observeForever { result ->
+                _event.value = result
+                if (result is Results.Success) {
+                    checkFavoriteStatus(result.data.id)
+                }
             }
         }
     }
 
-    // Check if the event is in the favorites list
     private fun checkFavoriteStatus(eventId: String) {
         viewModelScope.launch {
-            val isFavorited = repository.isEventFavorite(eventId)
-            _isFavorite.postValue(isFavorited)
+            repository.isEventFavorite(eventId).collect { isFavorite ->
+                _isFavorite.value = isFavorite
+            }
         }
     }
 
-    fun toggleFavorite() {
-        val currentEvent = (_results.value as? Results.Success)?.data ?: return
-        val currentFavoriteStatus = _isFavorite.value ?: false
-
+    fun toggleFavorite(event: EventEntity, context: Context) {
         viewModelScope.launch {
+            val currentFavoriteStatus = _isFavorite.value ?: false
             if (currentFavoriteStatus) {
-                repository.deleteFavoriteEvent(
-                    FavoriteEntity(
-                        id = currentEvent.id.toString()
-                    )
-                )
+                repository.deleteFavoriteEvent(event.id)
+                Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
             } else {
-                repository.addFavoriteEvent(
-                    FavoriteEntity(
-                        id = currentEvent.id.toString()
-                    )
-                )
+                repository.addFavoriteEvent(event.id)
+                Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
             }
             _isFavorite.value = !currentFavoriteStatus
         }

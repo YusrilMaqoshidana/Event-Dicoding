@@ -14,18 +14,15 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "BASE_URL", "\"https://event-api.dicoding.dev/\"")
     }
     buildTypes {
         release {
-            buildConfigField("String", "BASE_URL", "\"https://event-api.dicoding.dev/\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        debug {
-            buildConfigField("String", "BASE_URL", "\"https://event-api.dicoding.dev/\"")
         }
     }
     compileOptions {

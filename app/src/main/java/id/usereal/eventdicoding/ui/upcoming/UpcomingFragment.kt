@@ -1,11 +1,6 @@
 package id.usereal.eventdicoding.ui.upcoming
 
 import EventAdapter
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,15 +8,11 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import id.usereal.eventdicoding.data.Results
 import id.usereal.eventdicoding.databinding.FragmentUpcomingBinding
 import id.usereal.eventdicoding.viewmodel.EventViewModel
-import kotlinx.coroutines.launch
 
 class UpcomingFragment : Fragment() {
 
@@ -29,8 +20,6 @@ class UpcomingFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adapter: EventAdapter
     private val eventViewModel: EventViewModel by viewModels { ViewModelFactory.getInstance(requireContext()) }
-    private lateinit var connectivityManager: ConnectivityManager
-    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,7 +35,6 @@ class UpcomingFragment : Fragment() {
 
         setupToolbar()
         setupRecyclerView()
-        setupNetworkCallback()
         setupViewModel()
     }
 
@@ -65,54 +53,30 @@ class UpcomingFragment : Fragment() {
         }
     }
 
-    private fun setupNetworkCallback() {
-        connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        networkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    eventViewModel.setNetworkState(true)
-                    eventViewModel.getUpcomingEvent()
-                }
-            }
-
-            override fun onLost(network: Network) {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    eventViewModel.setNetworkState(false)
-                }
-            }
-        }
-
-        val networkRequest = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .build()
-        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
-    }
-
     private fun setupViewModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                eventViewModel.results.observeForever { result ->
-                    when (result) {
-                        is Results.Loading -> showLoading(true)
-                        is Results.Success -> {
-                            showLoading(false)
-                            adapter.submitList(result.data)
-                            showNoEventText(false)
-                        }
-                        is Results.Error -> {
-                            showLoading(false)
-                            showSnackbar(result.error)
-                            showNoEventText(true)
-                        }
-                    }
+        eventViewModel.getUpcomingEvents().observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Results.Loading -> showLoading(true)
+                is Results.Success -> {
+                    showLoading(false)
+                    showNoEventText(result.data.isEmpty())
+                    adapter.submitList(result.data)
+                }
+                is Results.Error -> {
+                    showLoading(false)
+                    showNoEventText(true)
+                    showSnackbar(result.error)
                 }
             }
         }
     }
+
 
     private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.rvEventUpcoming.visibility = if (isLoading) View.GONE else View.VISIBLE
+        binding.let {
+            it.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            it.rvEventUpcoming.visibility = if (isLoading) View.GONE else View.VISIBLE
+        }
     }
     private fun showNoEventText(show: Boolean) {
         binding.tvNoEventUpcoming.visibility = if (show) View.VISIBLE else View.GONE
@@ -124,7 +88,6 @@ class UpcomingFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        connectivityManager.unregisterNetworkCallback(networkCallback)
         _binding = null
     }
 }

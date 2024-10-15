@@ -18,6 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:title="@string/finished_event" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textField"
         android:layout_width="0dp"
@@ -48,12 +49,11 @@
         android:id="@+id/tvEventFinished"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="4dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="50dp"
-        app:layout_constraintBottom_toTopOf="@id/tvNoEventFinished"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textField"
         tools:listitem="@layout/card_event_finished" />
@@ -64,11 +64,12 @@
         android:layout_height="wrap_content"
         android:text="@string/no_event"
         android:textSize="24sp"
+        android:textColor="?android:attr/textColorPrimary"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tvEventFinished"
+        app:layout_constraintTop_toTopOf="@id/tvEventFinished"
+        app:layout_constraintBottom_toBottomOf="@id/tvEventFinished"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ProgressBar
         android:id="@+id/progressBar"

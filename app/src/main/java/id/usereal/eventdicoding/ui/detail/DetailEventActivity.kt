@@ -1,27 +1,48 @@
+package id.usereal.eventdicoding.ui.detail
+
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import id.usereal.eventdicoding.R
+import id.usereal.eventdicoding.data.Results
+import id.usereal.eventdicoding.data.local.entity.EventEntity
 import id.usereal.eventdicoding.databinding.ActivityDetailEventBinding
 import id.usereal.eventdicoding.viewmodel.DetailEventViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class DetailEventActivity : AppCompatActivity() {
 
-
     private lateinit var binding: ActivityDetailEventBinding
+    private val viewModel: DetailEventViewModel by viewModels {
+        ViewModelFactory.getInstance(this)
+    }
+    private val TAG = "DetailEventActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailEventBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbarDetail)
+
+        setupToolbar()
+
+        val eventId = intent.getStringExtra(EVENT_DETAIL) ?: return showErrorAndFinish()
+        Log.d(TAG, "Fetching details for event ID: $eventId")
+
+        viewModel.getDetailById(eventId)
+        observeViewModel()
+    }
+
+    private fun setupToolbar() {
         setSupportActionBar(binding.toolbarDetail)
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -31,78 +52,91 @@ class DetailEventActivity : AppCompatActivity() {
         binding.toolbarDetail.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+    }
 
-        val eventId = intent.getStringExtra(EVENT_DETAIL)
-        if (eventId.isNullOrEmpty()) {
-            Toast.makeText(this, "Event ID tidak ditemukan", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-        val viewModel = ViewModelProvider(this)[DetailEventViewModel::class.java]
-        viewModel.fetchDetailEvent(eventId)
-        viewModel.event.observe(this) { event ->
-            if (event != null) {
-                showEventDetail(event)
+    private fun observeViewModel() {
+        viewModel.event.observe(this) { result ->
+            when (result) {
+                is Results.Loading -> showLoading(true)
+                is Results.Success -> {
+                    showLoading(false)
+                    showEventDetail(result.data)
+                    showNoDetail(false)
+                }
+                is Results.Error -> {
+                    showLoading(false)
+                    showNoDetail(true)
+                    Toast.makeText(this, result.error, Toast.LENGTH_SHORT).show()
+                }
             }
         }
-        viewModel.isLoading.observe(this) { isLoading ->
-            showLoading(isLoading)
-        }
-        viewModel.snackbarMessage.observe(this) { message ->
-            message?.let {
-                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
-            }
-        }
-        viewModel.showNoEvent.observe(this) { noEvent ->
 
-            showNoDetail(noEvent)
+        viewModel.isFavorite.observe(this) { isFavorite ->
+            updateFavoriteButton(isFavorite)
         }
     }
 
+    private fun showErrorAndFinish() {
+        Log.e(TAG, "Event ID not found")
+        Toast.makeText(this, "Event ID tidak ditemukan", Toast.LENGTH_SHORT).show()
+        finish()
+    }
 
-    private fun showEventDetail(event: Event) {
+    private fun showEventDetail(event: EventEntity) {
         val apiDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val displayDateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
         val displayTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val sisaQuota = event.quota?.minus(event.registrants!!) ?: 0
+
+        val sisaQuota = event.quota?.minus(event.registrants ?: 0) ?: 0
+
         with(binding) {
-            Glide.with(root.context)
-                .load(event.mediaCover)
-                .into(ivEventImage)
-            Glide.with(root.context)
-                .load(event.imageLogo)
-                .override(350, 350)
-                .into(imageLogo)
+            Glide.with(this@DetailEventActivity).load(event.mediaCover).into(ivEventImage)
+            Glide.with(this@DetailEventActivity).load(event.imageLogo).override(350, 350).into(imageLogo)
+
             tvEventName.text = event.name
             tvEventSummary.text = event.summary
             tvEventCategory.text = getString(R.string.kategori, event.category)
             tvEventOwner.text = getString(R.string.penyelenggara, event.ownerName)
             tvEventCity.text = getString(R.string.lokasi, event.cityName)
-            event.beginTime.let { beginTime ->
-                val beginDate = beginTime?.let { apiDateFormat.parse(it) }
-                tvEventDate.text = getString(R.string.tanggal,
-                    beginDate?.let { displayDateFormat.format(it) })
-                tvEventTime.text = getString(R.string.waktu,
+
+            event.beginTime?.let { beginTime ->
+                val beginDate = apiDateFormat.parse(beginTime)
+                tvEventDate.text = getString(R.string.tanggal, beginDate?.let { displayDateFormat.format(it) })
+                tvEventTime.text = getString(
+                    R.string.waktu,
                     beginDate?.let { displayTimeFormat.format(it) },
-                    event.endTime?.let { it ->
-                        apiDateFormat.parse(it)?.let { displayTimeFormat.format(it) }
-                    })
+                    event.endTime?.let { endTime ->
+                        apiDateFormat.parse(endTime)?.let { displayTimeFormat.format(it) }
+                    }
+                )
             }
+
             tvEventQuota.text = if (sisaQuota > 0) {
                 getString(R.string.kuota, sisaQuota.toString())
             } else {
                 getString(R.string.kuota, "Habis")
             }
-            tvEventDescription.text = HtmlCompat.fromHtml(
-                event.description.toString(),
-                HtmlCompat.FROM_HTML_MODE_LEGACY
-            )
+
+            tvEventDescription.text = HtmlCompat.fromHtml(event.description.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+
             btnRegister.setOnClickListener {
-                val uri = Uri.parse("${event.link}")
-                val intent = Intent(Intent.ACTION_VIEW, uri)
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.link))
                 startActivity(intent)
             }
+
+            favoriteAdd.setOnClickListener {
+                viewModel.toggleFavorite(event, this@DetailEventActivity)
+            }
         }
+    }
+
+    private fun updateFavoriteButton(isFavorite: Boolean) {
+        binding.favoriteAdd.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                if (isFavorite) R.drawable.ic_favorite_bold else R.drawable.ic_favorite
+            )
+        )
     }
 
     private fun showLoading(isLoading: Boolean) {
@@ -117,9 +151,9 @@ class DetailEventActivity : AppCompatActivity() {
             tvNoDetailEvent.visibility = if (showNoEvent) View.VISIBLE else View.GONE
             tvNoDetailEvent.gravity = Gravity.CENTER
             progressBar.visibility = View.GONE
-            cardView.visibility = View.GONE
-            imageLogo.visibility = View.GONE
-            btnRegister.visibility = View.GONE
+            cardView.visibility = if (showNoEvent) View.GONE else View.VISIBLE
+            imageLogo.visibility = if (showNoEvent) View.GONE else View.VISIBLE
+            btnRegister.visibility = if (showNoEvent) View.GONE else View.VISIBLE
         }
     }
 

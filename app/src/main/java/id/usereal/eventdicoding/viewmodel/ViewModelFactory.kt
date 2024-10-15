@@ -8,6 +8,7 @@ import id.usereal.eventdicoding.di.Injection
 import id.usereal.eventdicoding.ui.settings.SettingPreferences
 import id.usereal.eventdicoding.viewmodel.DetailEventViewModel
 import id.usereal.eventdicoding.viewmodel.EventViewModel
+import id.usereal.eventdicoding.viewmodel.FavoriteViewModel
 
 object ViewModelFactory {
     fun getInstance(context: Context) = viewModelFactory {
@@ -17,10 +18,10 @@ object ViewModelFactory {
             EventViewModel(repository)
         }
         initializer {
-            DetailEventViewModel(repository)
+            FavoriteViewModel(repository)
         }
         initializer {
-            FavoriteViewModel(repository)
+            DetailEventViewModel(repository)
         }
         initializer {
             SettingsViewModel(pref)
