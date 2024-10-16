@@ -88,9 +88,7 @@ class FinishedFragment : Fragment() {
         binding.searchInputFinished.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if (s.isNullOrEmpty()) {
-                    clearSearch()
-                } else {
-                    updateVisibilityForSearchResults(true)
+                    showInitialView() 
                 }
             }
 

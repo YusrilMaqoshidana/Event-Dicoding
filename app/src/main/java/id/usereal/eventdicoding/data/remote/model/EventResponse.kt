@@ -3,7 +3,7 @@ package id.usereal.eventdicoding.data.remote.model
 import com.google.gson.annotations.SerializedName
 
 data class EventResponse(
-    @field:SerializedName("list")
+    @field:SerializedName("listEvents")
     val event: List<Event> = listOf(),
 
     @field:SerializedName("error")

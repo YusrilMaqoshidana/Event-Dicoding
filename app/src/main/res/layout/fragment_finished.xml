@@ -66,8 +66,8 @@
         android:textSize="24sp"
         android:textColor="?android:attr/textColorPrimary"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/tvEventFinished"
-        app:layout_constraintBottom_toBottomOf="@id/tvEventFinished"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

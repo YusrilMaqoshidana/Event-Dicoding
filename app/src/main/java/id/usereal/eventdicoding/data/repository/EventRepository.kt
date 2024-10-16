@@ -1,5 +1,6 @@
 package id.usereal.eventdicoding.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import id.usereal.eventdicoding.data.Results
@@ -20,12 +21,14 @@ class EventRepository private constructor(
         emit(Results.Loading)
         try {
             val databaseLocal = eventDao.getEventsActive()
+            Log.d("EventRepository", "getUpcomingEvent - Local Data: $databaseLocal") // Log data lokal
             if (databaseLocal.isNotEmpty()) {
                 emit(Results.Success(databaseLocal))
             } else {
                 try {
                     val response = apiService.getUpcomingEvents()
-                    val events = response.event
+                    val events = response.event.sortedBy { it.beginTime }
+                    Log.d("EventRepository", "API Raw Response Upcoming: ${events.size}")
                     val eventList = events.map { event ->
                         EventEntity(
                             event.id,
@@ -45,6 +48,7 @@ class EventRepository private constructor(
                             isActive = true
                         )
                     }
+                    Log.d("EventRepository", "getUpcomingEvent - API Data: ${eventList.listIterator()}") // Log data dari API
                     eventDao.deleteUpcomingEvents()
                     eventDao.insertEvents(eventList)
                     emit(Results.Success(eventList))
@@ -57,16 +61,19 @@ class EventRepository private constructor(
         }
     }
 
+
     fun getFinishedEvent(): LiveData<Results<List<EventEntity>>> = liveData {
         emit(Results.Loading)
         try {
             val databaseLocal = eventDao.getEventsNotActive()
+            Log.d("EventRepository", "getFinishedEvent - Local Data: $databaseLocal") // Log data lokal
             if (databaseLocal.isNotEmpty()) {
                 emit(Results.Success(databaseLocal))
             } else {
                 try {
                     val response = apiService.getFinishedEvents()
                     val events = response.event
+                    Log.d("EventRepository", "API Raw Response Finished: ${events.size}")
                     val eventList = events.map { event ->
                         EventEntity(
                             id = event.id,
@@ -86,6 +93,7 @@ class EventRepository private constructor(
                             isActive = false
                         )
                     }
+                    Log.d("EventRepository", "getFinishedEvent - API Data: $eventList") // Log data dari API
                     eventDao.deleteFinishedEvents()
                     eventDao.insertEvents(eventList)
                     emit(Results.Success(eventList))
@@ -97,6 +105,7 @@ class EventRepository private constructor(
             emit(Results.Error("Koneksi gagal, dan data lokal tidak ditemukan"))
         }
     }
+
 
     fun searchEvents(active: Int, query: String): LiveData<Results<List<EventEntity>>> = liveData {
         emit(Results.Loading)
