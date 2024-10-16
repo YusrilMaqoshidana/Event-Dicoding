@@ -1,19 +1,16 @@
 package id.usereal.eventdicoding.ui.bottomnavigasi
 
-import SettingsViewModel
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import id.usereal.eventdicoding.R
 import id.usereal.eventdicoding.databinding.ActivityMainBinding
-import id.usereal.eventdicoding.ui.settings.SettingPreferences
-import id.usereal.eventdicoding.ui.settings.dataStore
+import id.usereal.eventdicoding.viewmodel.SettingsViewModel
+import id.usereal.eventdicoding.viewmodel.ViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,9 +23,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        SettingPreferences.getInstance(application.dataStore)
-        settingsViewModel = ViewModelProvider(this, ViewModelFactory.getInstance(this))[SettingsViewModel::class.java]
+        settingsViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory.getInstance(this)
+        )[SettingsViewModel::class.java]
 
+        observeSettings()
+        setupNavigation()
+    }
+
+    private fun observeSettings() {
         settingsViewModel.getThemeSettings().observe(this) { isDarkModeActive ->
             AppCompatDelegate.setDefaultNightMode(
                 if (isDarkModeActive) AppCompatDelegate.MODE_NIGHT_YES
@@ -36,6 +40,12 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        settingsViewModel.getReminderState().observe(this) { isActive ->
+            settingsViewModel.setReminder(isActive)
+        }
+    }
+
+    private fun setupNavigation() {
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         navView.setupWithNavController(navController)

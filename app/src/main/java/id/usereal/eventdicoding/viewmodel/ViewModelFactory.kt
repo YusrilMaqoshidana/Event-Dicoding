@@ -1,30 +1,31 @@
+package id.usereal.eventdicoding.viewmodel
+
 import android.content.Context
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import id.usereal.eventdicoding.data.remote.retrofit.ApiConfig
+import androidx.work.WorkManager
 import id.usereal.eventdicoding.di.Injection
-import id.usereal.eventdicoding.ui.settings.SettingPreferences
-import id.usereal.eventdicoding.viewmodel.DetailEventViewModel
-import id.usereal.eventdicoding.viewmodel.EventViewModel
-import id.usereal.eventdicoding.viewmodel.FavoriteViewModel
 
 object ViewModelFactory {
     fun getInstance(context: Context) = viewModelFactory {
         val repository = Injection.provideRepository(context)
         val pref = Injection.provideSettingPreferences(context)
+        val workManager = WorkManager.getInstance(context)
+
         initializer {
             EventViewModel(repository)
         }
+
         initializer {
             FavoriteViewModel(repository)
         }
+
         initializer {
             DetailEventViewModel(repository)
         }
+
         initializer {
-            SettingsViewModel(pref)
+            SettingsViewModel(pref, workManager)
         }
     }
 }

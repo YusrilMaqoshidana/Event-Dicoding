@@ -3,7 +3,6 @@ package id.usereal.eventdicoding.ui.detail
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
@@ -17,6 +16,7 @@ import id.usereal.eventdicoding.data.Results
 import id.usereal.eventdicoding.data.local.entity.EventEntity
 import id.usereal.eventdicoding.databinding.ActivityDetailEventBinding
 import id.usereal.eventdicoding.viewmodel.DetailEventViewModel
+import id.usereal.eventdicoding.viewmodel.ViewModelFactory
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -26,7 +26,7 @@ class DetailEventActivity : AppCompatActivity() {
     private val viewModel: DetailEventViewModel by viewModels {
         ViewModelFactory.getInstance(this)
     }
-    private val TAG = "DetailEventActivity"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,6 @@ class DetailEventActivity : AppCompatActivity() {
         setupToolbar()
 
         val eventId = intent.getStringExtra(EVENT_DETAIL) ?: return showErrorAndFinish()
-        Log.d(TAG, "Fetching details for event ID: $eventId")
 
         viewModel.getDetailById(eventId)
         observeViewModel()
@@ -77,7 +76,6 @@ class DetailEventActivity : AppCompatActivity() {
     }
 
     private fun showErrorAndFinish() {
-        Log.e(TAG, "Event ID not found")
         Toast.makeText(this, "Event ID tidak ditemukan", Toast.LENGTH_SHORT).show()
         finish()
     }

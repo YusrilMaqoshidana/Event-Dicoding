@@ -1,6 +1,6 @@
 package id.usereal.eventdicoding.data.local.room
 
-import androidx.lifecycle.LiveData
+
 import androidx.room.*
 import id.usereal.eventdicoding.data.local.entity.EventEntity
 import id.usereal.eventdicoding.data.local.entity.FavoriteEntity
@@ -34,11 +34,16 @@ interface EventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavorite(favorite: FavoriteEntity)
+
     @Delete
     suspend fun deleteFavoriteEvent(favorite: FavoriteEntity): Int
+
     @Query("SELECT * FROM eventsTable WHERE id = :eventId LIMIT 1")
     suspend fun getEventById(eventId: String): EventEntity
 
     @Query("SELECT EXISTS(SELECT * FROM favoriteTable WHERE id = :eventId)")
     fun isEventFavorite(eventId: String): Flow<Boolean>
+
+    @Query("SELECT * FROM eventsTable WHERE isActive = 1 AND date(beginTime) >= :currentTime ORDER BY date(beginTime) ASC LIMIT 1")
+    suspend fun getClosestActiveEvent(currentTime: Long): EventEntity?
 }

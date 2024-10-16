@@ -1,11 +1,9 @@
 package id.usereal.eventdicoding.ui.upcoming
 
 import EventAdapter
-import SearchAdapter
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -19,9 +17,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import id.usereal.eventdicoding.adapter.SearchAdapter
 import id.usereal.eventdicoding.data.Results
 import id.usereal.eventdicoding.databinding.FragmentUpcomingBinding
 import id.usereal.eventdicoding.viewmodel.EventViewModel
+import id.usereal.eventdicoding.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 
 class UpcomingFragment : Fragment() {
@@ -34,7 +34,6 @@ class UpcomingFragment : Fragment() {
         ViewModelFactory.getInstance(requireContext())
     }
 
-    private val TAG = "UpcomingFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -100,7 +99,6 @@ class UpcomingFragment : Fragment() {
     }
 
     private fun performSearch(query: String) {
-        Log.d(TAG, "Performing search for query: $query")
         if (query.isNotEmpty()) {
             eventViewModel.searchEvent(query, 1).observe(viewLifecycleOwner) { result ->
                 when (result) {
@@ -108,7 +106,6 @@ class UpcomingFragment : Fragment() {
                     is Results.Success -> {
                         showLoading(false)
                         val events = result.data
-                        Log.d(TAG, "Search results loaded: ${events.size} items")
                         searchAdapter.submitList(events)
                         updateVisibilityForSearchResults(true) // Hide upcoming events
                     }
@@ -116,7 +113,6 @@ class UpcomingFragment : Fragment() {
                         showLoading(false)
                         showSnackbar(result.error)
                         updateVisibilityForSearchResults(false) // No results found
-                        Log.e(TAG, "Error loading search results: ${result.error}")
                     }
                 }
             }
@@ -126,7 +122,6 @@ class UpcomingFragment : Fragment() {
     }
 
     private fun clearSearch() {
-        Log.d(TAG, "Clearing search input")
         binding.searchInputUpcoming.text?.clear()
         updateVisibilityForSearchResults(false) // Show upcoming events again
         showInitialView()
@@ -143,7 +138,6 @@ class UpcomingFragment : Fragment() {
         binding.rvSearchEvent.visibility = if (isSearching) View.VISIBLE else View.GONE
         binding.rvEventUpcoming.visibility = if (isSearching) View.GONE else View.VISIBLE
         binding.tvNoEventUpcoming.visibility = if (isSearching && searchAdapter.itemCount == 0) View.VISIBLE else View.GONE
-        Log.d(TAG, "Updating visibility for search results: isSearching=$isSearching, itemCount=${searchAdapter.itemCount}")
     }
 
     private fun showNoEventText(show: Boolean) {
@@ -161,7 +155,6 @@ class UpcomingFragment : Fragment() {
                         is Results.Success -> {
                             showLoading(false)
                             val events = result.data
-                            Log.d(TAG, "Upcoming events loaded: ${events.size} items")
                             adapter.submitList(events)
                             showNoEventText(events.isEmpty())
                         }

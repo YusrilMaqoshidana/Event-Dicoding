@@ -15,6 +15,7 @@ import id.usereal.eventdicoding.adapter.FavoriteAdapter
 import id.usereal.eventdicoding.data.Results
 import id.usereal.eventdicoding.databinding.FragmentFavoriteBinding
 import id.usereal.eventdicoding.viewmodel.FavoriteViewModel
+import id.usereal.eventdicoding.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 
 class FavoriteFragment : Fragment() {

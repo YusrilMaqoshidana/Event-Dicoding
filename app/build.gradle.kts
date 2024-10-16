@@ -10,6 +10,7 @@ android {
     defaultConfig {
         applicationId = "id.usereal.eventdicoding"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -67,5 +68,5 @@ dependencies {
     implementation (libs.androidx.room.ktx.v243)
     ksp(libs.androidx.room.compiler.v243)
     implementation (libs.kotlinx.coroutines.android)
-
+    implementation (libs.androidx.work.runtime.ktx)
 }

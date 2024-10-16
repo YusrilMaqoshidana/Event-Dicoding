@@ -18,7 +18,7 @@ class FavoriteViewModel(private val repository: EventRepository) : ViewModel() {
         loadFavoriteEvents()
     }
 
-    fun loadFavoriteEvents() {
+    private fun loadFavoriteEvents() {
         viewModelScope.launch {
             repository.getFavoriteEvents().collect { result ->
                 _favoriteEvents.value = result

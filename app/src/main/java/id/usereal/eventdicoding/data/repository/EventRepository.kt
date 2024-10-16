@@ -1,6 +1,5 @@
 package id.usereal.eventdicoding.data.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import id.usereal.eventdicoding.data.Results
@@ -16,22 +15,17 @@ class EventRepository private constructor(
     private val apiService: ApiService,
     private val eventDao: EventDao,
 ) {
-    private val TAG = "EventRepository"
 
     fun getUpcomingEvent(): LiveData<Results<List<EventEntity>>> = liveData {
         emit(Results.Loading)
-        Log.d(TAG, "Fetching upcoming events...")
         try {
             val databaseLocal = eventDao.getEventsActive()
             if (databaseLocal.isNotEmpty()) {
-                Log.d(TAG, "Fetched ${databaseLocal.size} events from local database.")
                 emit(Results.Success(databaseLocal))
             } else {
-                Log.d(TAG, "No events found in local database. Fetching from API...")
                 try {
                     val response = apiService.getUpcomingEvents()
                     val events = response.event
-                    Log.d(TAG, "Fetched ${events.size} events from API.")
                     val eventList = events.map { event ->
                         EventEntity(
                             event.id,
@@ -53,29 +47,23 @@ class EventRepository private constructor(
                     }
                     eventDao.deleteUpcomingEvents()
                     eventDao.insertEvents(eventList)
-                    Log.d(TAG, "Inserted ${eventList.size} events into local database.")
                     emit(Results.Success(eventList))
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error fetching events from API: ${e.message}")
                     emit(Results.Error("Gagal memproses data, cek koneksi Anda"))
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error accessing local database: ${e.message}")
             emit(Results.Error("Koneksi gagal, dan data lokal tidak ditemukan"))
         }
     }
 
     fun getFinishedEvent(): LiveData<Results<List<EventEntity>>> = liveData {
         emit(Results.Loading)
-        Log.d(TAG, "Fetching finished events...")
         try {
             val databaseLocal = eventDao.getEventsNotActive()
             if (databaseLocal.isNotEmpty()) {
-                Log.d(TAG, "Fetched ${databaseLocal.size} finished events from local database.")
                 emit(Results.Success(databaseLocal))
             } else {
-                Log.d(TAG, "No finished events found in local database. Fetching from API...")
                 try {
                     val response = apiService.getFinishedEvents()
                     val events = response.event
@@ -98,28 +86,22 @@ class EventRepository private constructor(
                             isActive = false
                         )
                     }
-                    Log.d(TAG, "Inserted ${events.size} finished events into local database.")
                     eventDao.deleteFinishedEvents()
                     eventDao.insertEvents(eventList)
-                    Log.d(TAG, "Inserted ${eventList.size} finished events into local database.")
                     emit(Results.Success(eventList))
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error fetching finished events from API: ${e.message}")
                     emit(Results.Error("Gagal memproses data, cek koneksi Anda"))
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error accessing local database: ${e.message}")
             emit(Results.Error("Koneksi gagal, dan data lokal tidak ditemukan"))
         }
     }
 
     fun searchEvents(active: Int, query: String): LiveData<Results<List<EventEntity>>> = liveData {
         emit(Results.Loading)
-        Log.d(TAG, "Searching events with query: $query")
         try {
             val searchResult = eventDao.searchEvents(query, active)
-            Log.d(TAG, "Search results: ${searchResult.size}")
             if (searchResult.isNotEmpty()) {
                 emit(Results.Success(searchResult))
             } else {
@@ -145,18 +127,14 @@ class EventRepository private constructor(
                             isActive = false
                         )
                     }
-                    Log.d(TAG, "Inserted ${events.size} finished events into local database.")
                     eventDao.deleteFinishedEvents()
                     eventDao.insertEvents(eventList)
-                    Log.d(TAG, "Inserted ${eventList.size} finished events into local database.")
                     emit(Results.Success(eventList))
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error fetching finished events from API: ${e.message}")
                     emit(Results.Error("Event tidak ditemukan"))
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error searching events: ${e.message}")
             emit(Results.Error("Event tidak ditemukan"))
         }
     }
@@ -204,5 +182,10 @@ class EventRepository private constructor(
             instance ?: synchronized(this) {
                 instance ?: EventRepository(apiService, eventDao)
             }.also { instance = it }
+    }
+
+    suspend fun getNotifEvent(): EventEntity? {
+        val closestEvent = eventDao.getClosestActiveEvent(System.currentTimeMillis())
+        return closestEvent
     }
 }

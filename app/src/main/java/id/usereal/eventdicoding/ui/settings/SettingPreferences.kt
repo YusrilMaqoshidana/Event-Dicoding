@@ -1,4 +1,5 @@
 package id.usereal.eventdicoding.ui.settings
+
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -14,7 +15,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 class SettingPreferences private constructor(private val dataStore: DataStore<Preferences>) {
     private val themeKey = booleanPreferencesKey("theme_setting")
-
+    private val reminderKey = booleanPreferencesKey("reminder_setting")
     fun getThemeSetting(): Flow<Boolean> = dataStore.data
         .catch { emit(emptyPreferences()) }
         .map { it[themeKey] ?: false }
@@ -24,6 +25,17 @@ class SettingPreferences private constructor(private val dataStore: DataStore<Pr
             preferences[themeKey] = isDarkModeActive
         }
     }
+
+    fun getReminderSetting(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[reminderKey] ?: false
+    }
+
+    suspend fun setReminderSetting(isReminderActive: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[reminderKey] = isReminderActive
+        }
+    }
+
 
     companion object {
         @Volatile

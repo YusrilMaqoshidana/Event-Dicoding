@@ -1,11 +1,9 @@
 package id.usereal.eventdicoding.ui.finished
 
 import EventAdapter
-import SearchAdapter
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -20,9 +18,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import id.usereal.eventdicoding.adapter.SearchAdapter
 import id.usereal.eventdicoding.data.Results
 import id.usereal.eventdicoding.databinding.FragmentFinishedBinding
 import id.usereal.eventdicoding.viewmodel.EventViewModel
+import id.usereal.eventdicoding.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 
 class FinishedFragment : Fragment() {
@@ -35,7 +35,6 @@ class FinishedFragment : Fragment() {
         ViewModelFactory.getInstance(requireContext())
     }
 
-    private val TAG = "FinishedFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,7 +100,6 @@ class FinishedFragment : Fragment() {
     }
 
     private fun performSearch(query: String) {
-        Log.d(TAG, "Performing search for query: $query")
         if (query.isNotEmpty()) {
             eventViewModel.searchEvent(query, 0).observe(viewLifecycleOwner) { result ->
                 when (result) {
@@ -109,7 +107,6 @@ class FinishedFragment : Fragment() {
                     is Results.Success -> {
                         showLoading(false)
                         val events = result.data
-                        Log.d(TAG, "Search results loaded: ${events.size} items")
                         searchAdapter.submitList(events)
                         updateVisibilityForSearchResults(events.isNotEmpty())
                     }
@@ -117,7 +114,6 @@ class FinishedFragment : Fragment() {
                         showLoading(false)
                         showSnackbar(result.error)
                         updateVisibilityForSearchResults(false) // No results found
-                        Log.e(TAG, "Error loading search results: ${result.error}")
                     }
                 }
             }
@@ -125,7 +121,6 @@ class FinishedFragment : Fragment() {
     }
 
     private fun clearSearch() {
-        Log.d(TAG, "Clearing search input")
         binding.searchInputFinished.text?.clear()
         updateVisibilityForSearchResults(false)
         showInitialView()
@@ -142,13 +137,11 @@ class FinishedFragment : Fragment() {
         binding.rvSearchEvent.visibility = if (isSearching) View.VISIBLE else View.GONE
         binding.tvEventFinished.visibility = if (isSearching) View.GONE else View.VISIBLE
         binding.tvNoEventFinished.visibility = if (isSearching && searchAdapter.itemCount == 0) View.VISIBLE else View.GONE
-        Log.d(TAG, "Updating visibility for search results: isSearching=$isSearching, itemCount=${searchAdapter.itemCount}")
     }
 
     private fun showNoEventText(show: Boolean) {
         binding.tvNoEventFinished.visibility = if (show) View.VISIBLE else View.GONE
         binding.tvEventFinished.visibility = if (show) View.GONE else View.VISIBLE
-        Log.d(TAG, "Showing no event text: show=$show")
     }
 
     private fun observeFinishedEvents() {
@@ -157,13 +150,11 @@ class FinishedFragment : Fragment() {
                 eventViewModel.getFinishedEvents().observe(viewLifecycleOwner) { result ->
                     when (result) {
                         is Results.Loading -> {
-                            Log.d(TAG, "Finished events loading")
                             showLoading(true)
                         }
                         is Results.Success -> {
                             showLoading(false)
                             val events = result.data
-                            Log.d(TAG, "Finished events loaded: ${events.size} items")
                             adapter.submitList(events)
                             showNoEventText(events.isEmpty())
                         }
@@ -171,7 +162,6 @@ class FinishedFragment : Fragment() {
                             showLoading(false)
                             showSnackbar(result.error)
                             showNoEventText(true) // Show "No Event" text on error as well
-                            Log.e(TAG, "Error loading finished events: ${result.error}")
                         }
                     }
                 }

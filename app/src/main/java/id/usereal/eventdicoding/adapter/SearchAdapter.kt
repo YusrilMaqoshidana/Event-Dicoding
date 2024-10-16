@@ -1,3 +1,5 @@
+package id.usereal.eventdicoding.adapter
+
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -21,7 +23,7 @@ class SearchAdapter : ListAdapter<EventEntity, SearchAdapter.SearchViewHolder>(D
                 titleTextView.text = event.name
                 descriptionTextView.text = event.description
 
-                quotaTextView.text = event.quota?.let { quota ->
+                quotaTextView.text = event.quota?.let {
                     String.format("Jumlah kuota: %s", (event.quota - (event.registrants ?: 0)))
                 } ?: "Jumlah kuota: -"
 
